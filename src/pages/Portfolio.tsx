@@ -134,18 +134,6 @@ const Portfolio = () => {
           Our Portfolio
         </motion.h1>
         
-        {useLocalFallback && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg"
-          >
-            <p className="text-blue-800 text-center">
-              Showing local portfolio images (database connection unavailable)
-            </p>
-          </motion.div>
-        )}
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {portfolioItems.map((item, index) => (
             <motion.div

@@ -138,18 +138,6 @@ const FeaturedWorkSection = () => {
           Featured Artworks
         </h2>
         
-        {useLocalFallback && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg"
-          >
-            <p className="text-blue-800 text-center">
-              Showing local featured images (database connection unavailable)
-            </p>
-          </motion.div>
-        )}
-        
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {featuredWorks.map((work, index) => (
             <div
