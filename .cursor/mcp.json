@@ -1,0 +1,15 @@
+
+  {
+    "mcpServers": {
+    "supabase": {
+    "command": "C:\\Windows\\System32\\cmd.exe",
+    "args": [
+    "/c",
+    "npx",
+    "-y",
+    "@modelcontextprotocol/server-postgres",
+    "postgresql://postgres.khctonlemvmkfvqroymn:RruGBwLcqTfZLk8A@aws-0-ca-central-1.supabase.com:5432/postgres"
+    ]
+    }
+    }
+   }

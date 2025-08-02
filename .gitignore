@@ -1,0 +1,68 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.*
+
+# Environment Variables
+.env
+.env.*;
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+
+# Secrets and Keys
+*.pem
+*.key
+*_rsa
+*.pub
+secrets.*;
+credentials.*;
+*_key.*;
+*_secret.*
+
+# Configuration files that might contain sensitive data
+config.json
+settings.json
+*config*.json
+*settings*.json
+
+# Database files
+*.sqlite
+*.db
+*.sql
+
+# Temporary files
+*.swp
+*.swo
+.tmp
+.temp
+tmp/
+temp/
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Documentation files
+chat.md
+error.md

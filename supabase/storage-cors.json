@@ -1,0 +1,16 @@
+[
+  {
+    "origin": "*",
+    "method": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],
+    "maxAgeSeconds": 86400,
+    "headers": [
+      "Cache-Control",
+      "Content-Type",
+      "Authorization",
+      "X-Client-Info",
+      "X-Client-Version",
+      "X-Client-Library",
+      "apikey"
+    ]
+  }
+] 
