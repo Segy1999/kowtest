@@ -34,7 +34,7 @@ const MyBookings = () => {
 
   useEffect(() => {
     const fetchUserBookings = async () => {
-      if (!user) {
+      if (!user || !supabase) {
         setLoading(false);
         return;
       }
@@ -84,6 +84,15 @@ const MyBookings = () => {
       <div className="min-h-screen pt-24 container mx-auto px-4 text-center">
         <h1 className="text-3xl font-bold mb-4">My Bookings</h1>
         <p>Please log in to view your bookings.</p>
+      </div>
+    );
+  }
+
+  if (!supabase) {
+    return (
+      <div className="min-h-screen pt-24 container mx-auto px-4 text-center">
+        <h1 className="text-3xl font-bold mb-4">My Bookings</h1>
+        <p>Database connection is not available. Please try again later.</p>
       </div>
     );
   }

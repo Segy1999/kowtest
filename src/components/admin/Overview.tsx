@@ -31,6 +31,11 @@ export function Overview() {
 
   useEffect(() => {
     async function fetchStats() {
+      if (!supabase) {
+        console.warn('Supabase not available, skipping stats fetch');
+        return;
+      }
+
       try {
         const [
           { count: totalBookings },
@@ -68,6 +73,20 @@ export function Overview() {
 
     fetchStats();
   }, []);
+
+  if (!supabase) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-center text-muted-foreground">
+              Database connection is not available
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

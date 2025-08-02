@@ -70,6 +70,12 @@ export function PortfolioManager({ section = "portfolio" }: PortfolioManagerProp
   }, [section]);
 
   async function fetchItems() {
+    if (!supabase) {
+      console.warn('Supabase not available, skipping items fetch');
+      setLoading(false);
+      return;
+    }
+
     try {
       if (section === 'flash') {
         // Fetch from flash_designs table
@@ -225,6 +231,20 @@ export function PortfolioManager({ section = "portfolio" }: PortfolioManagerProp
   };
 
   console.log(`Managing images for section: ${section}`);
+
+  if (!supabase) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-center text-muted-foreground">
+              Database connection is not available. Please try again later.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

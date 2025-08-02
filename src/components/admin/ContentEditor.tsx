@@ -31,6 +31,12 @@ export function ContentEditor() {
   }, []);
 
   async function fetchContent() {
+    if (!supabase) {
+      console.warn('Supabase not available, skipping content fetch');
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('content')
@@ -51,6 +57,15 @@ export function ContentEditor() {
   }
 
   async function updateContent(id: number, value: string) {
+    if (!supabase) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Database connection is not available",
+      });
+      return;
+    }
+
     try {
       setSaving(true);
       const { error } = await supabase
@@ -75,6 +90,18 @@ export function ContentEditor() {
     } finally {
       setSaving(false);
     }
+  }
+
+  if (!supabase) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <p className="text-center text-muted-foreground">
+            Database connection is not available. Please try again later.
+          </p>
+        </CardContent>
+      </Card>
+    );
   }
 
   if (loading) {

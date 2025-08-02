@@ -28,7 +28,15 @@ export const useSupabase = () => {
     });
   }, [toast]);
 
+  // Check if Supabase is available
+  const isSupabaseAvailable = !!supabase;
+
   const createBooking = useCallback(async (booking: Database['public']['Tables']['bookings']['Insert']) => {
+    if (!isSupabaseAvailable) {
+      console.warn('Supabase not available, booking creation skipped');
+      return false;
+    }
+
     try {
       console.log('Attempting to create booking with data:', booking);
       
@@ -41,7 +49,7 @@ export const useSupabase = () => {
         }
       }
       
-      const { error, data } = await supabase
+      const { error, data } = await supabase!
         .from('bookings')
         .insert(booking)
         .select('id')
@@ -58,21 +66,26 @@ export const useSupabase = () => {
       console.error('Error creating booking:', error);
       throw error;
     }
-  }, []);
+  }, [isSupabaseAvailable]);
 
   const uploadImage = useCallback(async (file: File, path: string) => {
+    if (!isSupabaseAvailable) {
+      console.warn('Supabase not available, image upload skipped');
+      return null;
+    }
+
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${path}/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase!.storage
         .from('reference-photos')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = supabase!.storage
         .from('reference-photos')
         .getPublicUrl(filePath);
 
@@ -81,11 +94,16 @@ export const useSupabase = () => {
       handleError(error as Error);
       return null;
     }
-  }, [handleError]);
+  }, [handleError, isSupabaseAvailable]);
 
   const getFeaturedWorks = useCallback(async () => {
+    if (!isSupabaseAvailable) {
+      console.warn('Supabase not available, returning null for featured works');
+      return null;
+    }
+
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabase!
         .from('portfolio')
         .select('*')
         .eq('featured', true)
@@ -97,11 +115,16 @@ export const useSupabase = () => {
       handleError(error as Error);
       return null;
     }
-  }, [handleError]);
+  }, [handleError, isSupabaseAvailable]);
 
   const getPortfolioItems = useCallback(async (category?: string) => {
+    if (!isSupabaseAvailable) {
+      console.warn('Supabase not available, returning null for portfolio items');
+      return null;
+    }
+
     try {
-      let query = supabase
+      let query = supabase!
         .from('portfolio')
         .select('*')
         .order('created_at', { ascending: false });
@@ -118,11 +141,16 @@ export const useSupabase = () => {
       handleError(error as Error);
       return null;
     }
-  }, [handleError]);
+  }, [handleError, isSupabaseAvailable]);
 
   const getFlashDesigns = useCallback(async (): Promise<FlashDesign[] | null> => {
+    if (!isSupabaseAvailable) {
+      console.warn('Supabase not available, returning null for flash designs');
+      return null;
+    }
+
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabase!
         .from('flash_designs')
         .select('*')
         .order('created_at', { ascending: false });
@@ -133,11 +161,16 @@ export const useSupabase = () => {
       handleError(error as Error);
       return null;
     }
-  }, [handleError]);
+  }, [handleError, isSupabaseAvailable]);
 
   const getFlashDesignById = useCallback(async (id: number): Promise<FlashDesign | null> => {
+    if (!isSupabaseAvailable) {
+      console.warn('Supabase not available, returning null for flash design');
+      return null;
+    }
+
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabase!
         .from('flash_designs')
         .select('*')
         .eq('id', id)
@@ -149,7 +182,7 @@ export const useSupabase = () => {
       handleError(error as Error);
       return null;
     }
-  }, [handleError]);
+  }, [handleError, isSupabaseAvailable]);
 
   const createFlashDesignBooking = useCallback(async (bookingData: {
     first_name: string;
@@ -166,8 +199,13 @@ export const useSupabase = () => {
     instagram?: string | null;
     special_requests?: string | null;
   }) => {
+    if (!isSupabaseAvailable) {
+      console.warn('Supabase not available, flash design booking creation skipped');
+      return false;
+    }
+
     try {
-      const { error } = await supabase
+      const { error } = await supabase!
         .from('bookings')
         .insert({
           ...bookingData,
@@ -181,14 +219,18 @@ export const useSupabase = () => {
       handleError(error as Error);
       throw error;
     }
-  }, [handleError]);
+  }, [handleError, isSupabaseAvailable]);
 
   // Fetch messages for a booking
   const fetchMessages = useCallback(async (bookingId: string) => {
-    if (!bookingId) return;
+    if (!bookingId || !isSupabaseAvailable) {
+      console.warn('Supabase not available or no booking ID, skipping message fetch');
+      return;
+    }
+    
     setIsFetchingMessages(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabase!
         .from('messages')
         .select('*')
         .eq('booking_id', bookingId)
@@ -207,19 +249,23 @@ export const useSupabase = () => {
     } finally {
       setIsFetchingMessages(false);
     }
-  }, [handleError]);
+  }, [handleError, isSupabaseAvailable]);
 
   // Send a new message
   const sendMessage = useCallback(async (bookingId: string, message: string) => {
-    if (!message?.trim()) return;
+    if (!message?.trim() || !isSupabaseAvailable) {
+      console.warn('Supabase not available or no message, skipping message send');
+      return;
+    }
+    
     setIsSendingMessage(true);
     try {
-      const { error } = await supabase
+      const { error } = await supabase!
         .from('messages')
         .insert({
           booking_id: bookingId,
           message: message.trim(),
-          sender_id: (await supabase.auth.getUser()).data.user?.id
+          sender_id: (await supabase!.auth.getUser()).data.user?.id
         });
 
       if (error) {
@@ -230,11 +276,16 @@ export const useSupabase = () => {
     } finally {
       setIsSendingMessage(false);
     }
-  }, [handleError]);
+  }, [handleError, isSupabaseAvailable]);
 
   // Subscribe to new messages
   const subscribeToMessages = useCallback((bookingId: string, callback?: (payload: any) => void) => {
-    const channel = supabase
+    if (!isSupabaseAvailable) {
+      console.warn('Supabase not available, skipping message subscription');
+      return null;
+    }
+
+    const channel = supabase!
       .channel(`public:messages:booking_id=eq.${bookingId}`)
       .on(
         'postgres_changes',
@@ -260,7 +311,7 @@ export const useSupabase = () => {
       });
 
     return channel;
-  }, [handleError]);
+  }, [handleError, isSupabaseAvailable]);
 
   return {
     createBooking,
@@ -276,5 +327,6 @@ export const useSupabase = () => {
     fetchMessages,
     sendMessage,
     subscribeToMessages,
+    isSupabaseAvailable,
   };
 };

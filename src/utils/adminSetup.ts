@@ -55,6 +55,10 @@ export async function createAdminUser(userData: AdminUserData): Promise<AdminSet
   };
 
   try {
+    if (!supabase) {
+      throw new Error('Database connection is not available');
+    }
+
     logger.info('Starting admin user creation...', { email: userData.email, username: userData.username });
 
     // Validate input data
@@ -161,6 +165,8 @@ export async function createAdminUser(userData: AdminUserData): Promise<AdminSet
 }
 
 async function cleanupFailedSetup(userId: string): Promise<void> {
+  if (!supabase) return;
+  
   try {
     await supabase.auth.admin.deleteUser(userId);
     await supabase.from('profiles').delete().match({ id: userId });
@@ -180,6 +186,11 @@ function handleAuthError(error: any, logger: any): never {
 }
 
 export async function verifyAdminAccess(userId: string): Promise<boolean> {
+  if (!supabase) {
+    console.warn('Supabase not available, admin access verification failed');
+    return false;
+  }
+
   try {
     const [profileResult, claimsResult] = await Promise.all([
       supabase.from('profiles').select('role').eq('id', userId).single(),

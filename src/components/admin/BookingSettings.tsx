@@ -53,6 +53,12 @@ export function BookingSettings() {
   }, []);
 
   async function fetchBookings() {
+    if (!supabase) {
+      console.warn('Supabase not available, skipping bookings fetch');
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('bookings')
@@ -73,6 +79,15 @@ export function BookingSettings() {
   }
 
   async function updateBookingStatus(id: string, status: string) {
+    if (!supabase) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Database connection is not available",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('bookings')
@@ -95,6 +110,18 @@ export function BookingSettings() {
         description: error.message,
       });
     }
+  }
+
+  if (!supabase) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <p className="text-center text-muted-foreground">
+            Database connection is not available. Please try again later.
+          </p>
+        </CardContent>
+      </Card>
+    );
   }
 
   if (loading) {

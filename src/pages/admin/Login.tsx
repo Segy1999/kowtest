@@ -23,6 +23,16 @@ export default function AdminLogin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!supabase) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Database connection is not available. Please try again later.",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -62,6 +72,23 @@ export default function AdminLogin() {
       setLoading(false);
     }
   };
+
+  if (!supabase) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Card className="w-[400px]">
+          <CardHeader>
+            <CardTitle>Admin Login</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center text-muted-foreground">
+              Database connection is not available. Please try again later.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center">

@@ -20,6 +20,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     const checkSession = async () => {
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+      
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate('/admin/login');
@@ -32,6 +37,23 @@ export default function Dashboard() {
 
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (!supabase) {
+    return (
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        </div>
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-center text-muted-foreground">
+              Database connection is not available. Please try again later.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
